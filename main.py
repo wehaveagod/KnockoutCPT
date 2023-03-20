@@ -1,53 +1,67 @@
 import pygame
-from numpy import array
+import pymunk
+import disk
+import arrow
+import numpy as np
 
 WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
 pygame.init()
-SCREEN = pygame.display.set_mode((640, 480))
-FPS = pygame.time.Clock()
+SCREEN = pygame.display.set_mode((600, 600))
+CLOCK = pygame.time.Clock()
+SPACE = pymunk.Space()
+FPS = 50
 
-line_selection = False
-all_lines = []
-
+all_disks = np.array([])
+disk_idx = -1
 run = True
+
 while run:
     for event in pygame.event.get():
+
+        slider = disk.Disk(center_x = 100, center_y = 100, radius = 10, disk_color = WHITE)
+        slider.draw(SCREEN)
+        all_disks = np.append(all_disks, slider)
         
         if event.type == pygame.QUIT:
             run = False
             pygame.quit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            line_selection = True
-            start_line_x = pygame.mouse.get_pos()[0]
-            start_line_y = pygame.mouse.get_pos()[1]
+            mouse_pos = pygame.mouse.get_pos()
 
-            end_line_x = start_line_x
-            end_line_y = start_line_y
+            for i in range(len(all_disks)):
+                if(all_disks[i].is_over_mouse(mouse_pos)):
+                    disk_idx = i
+                    break
 
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
+            if(disk_idx != -1):
+                start_arrow_x = all_disks[disk_idx].get_center_x()
+                start_arrow_y = all_disks[disk_idx].get_center_y()
 
-        elif event.type == pygame.MOUSEMOTION:
-            if line_selection:
+                end_arrow_x = start_arrow_x
+                end_arrow_y = start_arrow_y
+
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
 
-                end_line_x += event.rel[0]
-                end_line_y += event.rel[1]
+        elif event.type == pygame.MOUSEMOTION:
+            if(disk_idx != -1):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_CROSSHAIR)
 
-                SCREEN.fill(BLACK)
+                end_arrow_x += event.rel[0]
+                end_arrow_y += event.rel[1]
 
-                for i in range(len(all_lines)):
-                    pygame.draw.line(SCREEN, WHITE, all_lines[i][0], all_lines[i][1], width = 3)
+                disk_arrow = arrow.Arrow(start_arrow_x, start_arrow_y, end_arrow_x, end_arrow_y, BLUE)
+                all_disks[disk_idx].set_vector(SCREEN, disk_arrow)
 
-                pygame.draw.line(SCREEN, WHITE, (start_line_x, start_line_y), (end_line_x, end_line_y), width = 3)
+                pygame.display.update()
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            line_selection = False
-            pygame.draw.line(SCREEN, WHITE, (start_line_x, start_line_y), (end_line_x, end_line_y), width = 3)
-            array(all_lines.append([(start_line_x, start_line_y), (end_line_x, end_line_y)]))
+            disk_idx = -1
             pygame.display.update()
         
     pygame.display.update()
-    FPS.tick(60)
+    CLOCK.tick(FPS)
+    SPACE.step(1 / FPS)
