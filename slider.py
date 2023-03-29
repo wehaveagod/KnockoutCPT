@@ -16,7 +16,7 @@ HEIGHT = 600
 
 
 class Slider:
-    def __init__(self, center_x: int, center_y: int, radius: int, space: pymunk.Space, collision_type: int, player: int, velocity_vector = arrow.Arrow(0, 0, 0, 0, BLUE)):
+    def __init__(self, center_x: int, center_y: int, radius: int, space: pymunk.Space, collision_type: int, player: int, max_speed: int, velocity_vector = arrow.Arrow(0, 0, 0, 0, BLUE)):
         self.body = pymunk.Body()
         self.body.position = (center_x, center_y)
         self.body.velocity = 0, 0
@@ -34,6 +34,7 @@ class Slider:
         self.space.add(self.body, self.shape)
 
         self.player = player
+        self.max_speed = max_speed
 
     def draw(self, window, draw_arrow: bool):
         pygame.draw.circle(window, self.disk_color, self.body.position, self.radius)
@@ -47,8 +48,8 @@ class Slider:
         self.velocity_vector = new_vector
 
     def set_velocity(self):
-        self.body.velocity = (MAX_SPEED * (self.velocity_vector.get_end_coord()[0] - self.velocity_vector.get_start_coord()[0]) / WIDTH, 
-                              MAX_SPEED * (self.velocity_vector.get_end_coord()[1] - self.velocity_vector.get_start_coord()[1]) / HEIGHT)
+        self.body.velocity = (self.max_speed * (self.velocity_vector.get_end_coord()[0] - self.velocity_vector.get_start_coord()[0]) / WIDTH, 
+                              self.max_speed* (self.velocity_vector.get_end_coord()[1] - self.velocity_vector.get_start_coord()[1]) / HEIGHT)
         
     def get_center_coord(self):
         return self.body.position
