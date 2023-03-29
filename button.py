@@ -1,5 +1,7 @@
 import pygame
 
+BLACK = (0, 0, 0)
+
 class Button():
 	def __init__(self, color: tuple[int, int, int], left_corner_x: int, left_corner_y: int, width: int, height: int, font: pygame.font.SysFont, text: str = '',):
 		self.color = color
@@ -20,6 +22,9 @@ class Button():
 		if self.text != '':
 			text = self.font.render(self.text, 1, (0,0,0))
 			window.blit(text, (self.left_corner_x + (self.width/2 - text.get_width()/2), self.left_corner_y + (self.height/2 - text.get_height()/2)))
+		
+	def remove(self, window: pygame.display):
+		pygame.draw.rect(window, BLACK, (self.left_corner_x,self.left_corner_y,self.width,self.height),0)
 
 	def is_over_mouse(self, pos: tuple[int, int]) -> bool:
 		#Pos is the mouse position or a tuple of (x,y) coordinates
