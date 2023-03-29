@@ -8,7 +8,9 @@ import random as rand
 import numpy as np
 import math
 import sys
+import time
 
+#Color definitions
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
@@ -16,18 +18,20 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
+#Game window definitions
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 700
 
+#Initializing Pygame window
 pygame.init()
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 SCREEN_RECT = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 pygame.display.set_caption("Knockout CPT")
-
 CLOCK = pygame.time.Clock()
 SPACE = pymunk.Space()
 FPS = 50
 
+#Function to convert time integer to string representation
 def draw_text(font_size: int, text: str, center_position: tuple[int, int], text_color: tuple[int, int, int] = WHITE, background_color: tuple[int, int, int] = BLACK):
     font = pygame.font.SysFont(None, font_size)
     text_render = font.render(text, True, text_color, background_color)
@@ -35,6 +39,7 @@ def draw_text(font_size: int, text: str, center_position: tuple[int, int], text_
     text_rect.center = center_position
     SCREEN.blit(text_render, text_rect)
 
+#Function for menu screen
 def menu():
     SCREEN.fill(BLACK)
 
@@ -75,6 +80,7 @@ def menu():
     
     return int(NUM_TOKENS_DROPDOWN.get_current_option()), SPEED_DROPDOWN.get_current_option(), ARENA_SIZE_DROPDOWN.get_current_option()
 
+#Function for running the game
 def run_game(num_tokens: int, speed: str, arena_size: str) -> bool:
     SPEED_TO_NUM = {"Slow": 100, "Normal": 300, "Medium": 500, "Fast": 700}
     ARENA_SIZE_TO_NUM = {"Small": 300, "Normal": 400, "Medium": 500, "Large": 600}
@@ -246,9 +252,27 @@ def run_game(num_tokens: int, speed: str, arena_size: str) -> bool:
         pygame.display.update()
     return False
 
+def transition_screen():
+	SCREEN.fill(BLACK)
+	
+	draw_text(font_size = 100, text = "3", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = WHITE, background_color = BLACK)
+	pygame.display.update()
+	time.sleep(1)
+	draw_text(font_size = 100, text = "3", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = BLACK, background_color = BLACK)
+	draw_text(font_size = 100, text = "2", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = WHITE, background_color = BLACK)
+	pygame.display.update()
+	time.sleep(1)
+	draw_text(font_size = 100, text = "2", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = BLACK, background_color = BLACK)
+	draw_text(font_size = 100, text = "1", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = WHITE, background_color = BLACK)
+	pygame.display.update()
+	time.sleep(1)
+	draw_text(font_size = 100, text = "1", center_position = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2), text_color = BLACK, background_color = BLACK)	
+
+
+#Main loop to connect screens
 while True:
     exit = False
     NUM_TOKENS, SPEED, ARENA_SIZE = menu()
     while not exit:
-        # transition_screen()
+        transition_screen()
         exit = run_game(num_tokens = NUM_TOKENS, speed = SPEED, arena_size = ARENA_SIZE)
